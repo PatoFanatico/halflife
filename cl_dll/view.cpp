@@ -401,6 +401,8 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
+cl_viewrollangle = CVAR_CREATE ( "cl_viewrollangle", "0.65", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
+cl_viewrollspeed = CVAR_CREATE ( "cl_viewrollspeed", "300", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 void V_CalcViewRoll ( struct ref_params_s *pparams )
 {
 	float		side;
@@ -409,6 +411,7 @@ void V_CalcViewRoll ( struct ref_params_s *pparams )
 	viewentity = gEngfuncs.GetEntityByIndex( pparams->viewentity );
 	if ( !viewentity )
 		return;
+        pparams->viewangles[ROLL] = V_CalcRoll (pparams->viewangles, pparams->simvel, cl_viewrollangle->value, cl_viewrollspeed->value ) * 4;
 
 	side = V_CalcRoll ( viewentity->angles, pparams->simvel, pparams->movevars->rollangle, pparams->movevars->rollspeed );
 
@@ -637,8 +640,8 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		}
 	}
 	
-	// Give gun our viewangles
-	VectorCopy ( pparams->cl_viewangles, view->angles );
+	// Enables old HL WON view bobbing
+        VectorCopy( view->angles, view->curstate.angles );
 	
 	// set up gun position
 	V_CalcGunAngle ( pparams );
